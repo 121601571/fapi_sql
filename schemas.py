@@ -43,6 +43,7 @@ class MyUserBase(BaseModel):
     username: str
     is_active: bool
     role: int
+    telnum: str
 
 
 class MyUserCreate(MyUserBase):

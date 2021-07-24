@@ -1,6 +1,9 @@
 from sqlalchemy.orm import Session
 
 import models, schemas
+from passlib.context import CryptContext
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def get_user(db: Session, user_id: int):
@@ -50,10 +53,13 @@ def get_myuser_by_name(db: Session, name: str):
 def get_myusers(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.MyUser).offset(skip).limit(limit).all()
 
+def get_password_hash(password):
+    return pwd_context.hash(password)
 
 def create_myuser(db: Session, user: schemas.MyUserCreate):
-    fake_hashed_password = user.password + "notreallyhashed"
-    db_user = models.MyUser(email=user.email, password=fake_hashed_password, username = user.username)
+    #fake_hashed_password = user.password + "notreallyhashed"
+    fake_hashed_password = get_password_hash(user.password)
+    db_user = models.MyUser(email=user.email, password=fake_hashed_password, username = user.username, telnum = user.telnum)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
